@@ -33,4 +33,10 @@ public class Order {
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
 
+    @Enumerated(EnumType.STRING)
+    private DeliveryType deliveryType; // nazwa może byc mylna, ale chodzi o to czy zamówienie jest typem na dowóz czy na miejscu
+
+    @OneToOne(mappedBy = "order")
+    private Delivery delivery;
+
 }
