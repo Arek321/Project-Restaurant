@@ -1,12 +1,11 @@
 package org.example.restaurantms.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,4 +18,6 @@ public class Table {
     private int tableNumber;
     private int seatsNumber;
 
+    @OneToMany(mappedBy = "table")
+    private List<Reservation> reservations;
 }
