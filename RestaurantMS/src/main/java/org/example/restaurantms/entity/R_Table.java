@@ -7,17 +7,19 @@ import lombok.Setter;
 
 import java.util.List;
 
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Table {
+@Table(name = "restaurant_table")
+public class R_Table {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private int tableNumber;
     private int seatsNumber;
 
-    @OneToMany(mappedBy = "table")
+    @OneToMany(mappedBy = "r_table")
     private List<Reservation> reservations;
 }
