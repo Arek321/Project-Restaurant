@@ -1,17 +1,20 @@
 package org.example.restaurantms.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.restaurantms.entity.Reservation;
 import org.example.restaurantms.service.ReservationService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -31,5 +34,34 @@ public class ReservationController {
     public ResponseEntity<List<Reservation>> getAllReservations() {
         List<Reservation> reservations = reservationService.getAllReservations();
         return ResponseEntity.ok(reservations);
+    }
+
+    @Operation(summary = "Create a reservation", description = "Creates a reservation for a table for a specific user and time")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Reservation created successfully"),
+            @ApiResponse(responseCode = "404", description = "User or table not found")
+    })
+    @PostMapping
+    public ResponseEntity<Reservation> createReservation(@RequestBody Map<String, String> payload) {
+        Long userId = Long.parseLong(payload.get("userId"));
+        Long tableId = Long.parseLong(payload.get("tableId"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime startTime = LocalDateTime.parse(payload.get("startTime"), formatter);
+
+        Reservation createdReservation = reservationService.createReservation(userId, tableId, startTime);
+        return ResponseEntity.ok(createdReservation);
+    }
+
+    @Operation(summary = "Delete a reservation", description = "Cancels and deletes an existing reservation by its ID")
+    @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "Reservation deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Reservation not found")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReservation(
+            @Parameter(description = "Id of reservation to cancel")
+            @PathVariable Long id) {
+        reservationService.deleteReservation(id);
+        return ResponseEntity.noContent().build();
     }
 }

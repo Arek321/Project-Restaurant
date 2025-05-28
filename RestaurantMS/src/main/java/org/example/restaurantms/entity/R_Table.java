@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.List;
 
@@ -21,5 +22,6 @@ public class R_Table {
     private int seatsNumber;
 
     @OneToMany(mappedBy = "r_table")
+    @JsonManagedReference(value = "table-reservation")
     private List<Reservation> reservations;
 }

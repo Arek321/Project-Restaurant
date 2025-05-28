@@ -32,6 +32,7 @@ public class User {
     private RoleType role;
 
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "user")

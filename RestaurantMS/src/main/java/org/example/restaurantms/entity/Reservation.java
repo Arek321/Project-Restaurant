@@ -1,5 +1,6 @@
 package org.example.restaurantms.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
@@ -18,10 +19,12 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name="user_id")
+    @JsonBackReference
     private User user;
 
     @ManyToOne
     @JoinColumn(name="table_id")
+    @JsonBackReference(value = "table-reservation")
     private R_Table r_table;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
