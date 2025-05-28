@@ -41,4 +41,23 @@ public class MenuItemController {
         MenuItem createdItem = menuItemService.createMenuItem(menuItem);
         return new ResponseEntity<>(createdItem, HttpStatus.CREATED);
     }
+
+    @Operation(summary = "Partially update a menu item", description = "Updates selected fields of a menu item by its ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Menu item updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Menu item not found")
+    })
+    @PatchMapping("/{id}")
+    public ResponseEntity<MenuItem> partiallyUpdateMenuItem(
+            @Parameter(description = "ID of a menu item to update")
+            @PathVariable Long id,
+            @RequestBody @Parameter(description = "Fields to update") MenuItem updates) {
+
+        MenuItem updatedItem = menuItemService.partiallyUpdateMenuItem(id, updates);
+        if (updatedItem != null) {
+            return ResponseEntity.ok(updatedItem);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

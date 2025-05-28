@@ -23,4 +23,15 @@ public class MenuItemService {
     public MenuItem createMenuItem(MenuItem menuItem) {
         return menuItemRepository.save(menuItem);
     }
+
+    public MenuItem partiallyUpdateMenuItem(Long id, MenuItem updates) {
+        return menuItemRepository.findById(id).map(item -> {
+            if (updates.getName() != null) item.setName(updates.getName());
+            if (updates.getDescription() != null) item.setDescription(updates.getDescription());
+            if (updates.getPrice() != null) item.setPrice(updates.getPrice());
+            if (updates.getAllergens() != null) item.setAllergens(updates.getAllergens());
+            return menuItemRepository.save(item);
+        }).orElse(null);
+    }
+
 }
