@@ -50,4 +50,22 @@ public class ReservationService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found with id: " + id));
         reservationRepository.delete(reservation);
     }
+
+    public Reservation updateReservation(Long reservationId, Long tableId, LocalDateTime newStartTime) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new RuntimeException("Reservation not found with id: " + reservationId));
+
+        if (tableId != null) {
+            R_Table newTable = tableRepository.findById(tableId)
+                    .orElseThrow(() -> new RuntimeException("Table not found with id: " + tableId));
+            reservation.setR_table(newTable);
+        }
+
+        if (newStartTime != null) {
+            reservation.setStartTime(newStartTime);
+            reservation.setEndTime(newStartTime.plusHours(2));
+        }
+
+        return reservationRepository.save(reservation);
+    }
 }

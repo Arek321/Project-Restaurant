@@ -64,4 +64,26 @@ public class ReservationController {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Update reservation",
+            description = "Allows changing the reservation date and/or table")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reservation updated successfully"),
+            @ApiResponse(responseCode = "404", description = "Reservation or table not found")
+    })
+    @PatchMapping("/{id}")
+    public ResponseEntity<Reservation> updateReservation(
+            @PathVariable Long id,
+            @RequestParam(required = false) Long tableId,
+            @RequestParam(required = false) String startTime // "yyyy-MM-dd HH:mm:ss"
+    ) {
+        LocalDateTime parsedStartTime = null;
+        if (startTime != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            parsedStartTime = LocalDateTime.parse(startTime, formatter);
+        }
+
+        Reservation updated = reservationService.updateReservation(id, tableId, parsedStartTime);
+        return ResponseEntity.ok(updated);
+    }
 }
