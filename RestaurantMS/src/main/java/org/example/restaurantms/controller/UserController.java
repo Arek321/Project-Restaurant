@@ -38,5 +38,47 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Delete a User", description = "Deletes a User by ID")
+    @ApiResponse(responseCode = "204", description = "User deleted successfully")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(
+            @Parameter(description = "The ID of the User to delete", required = true)
+            @PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Get a User by ID", description = "Returns a single User by their ID")
+    @ApiResponse(responseCode = "200", description = "User found")
+    @ApiResponse(responseCode = "404", description = "User not found")
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(
+            @Parameter(description = "The ID of the User to retrieve", required = true)
+            @PathVariable Long id) {
+
+        return userService.getUserById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    @Operation(
+            summary = "Partially update a User",
+            description = "Updates selected fields of an existing User.\nNOTE! Only change those values that you want to change!"
+    )
+    @ApiResponse(responseCode = "200", description = "User updated successfully")
+    @ApiResponse(responseCode = "404", description = "User not found")
+    @PatchMapping("/{id}")
+    public ResponseEntity<User> partiallyUpdateUser(
+            @PathVariable Long id,
+            @RequestBody @Parameter(description = "User object with fields to update") User updates) {
+
+        User updatedUser = userService.partiallyUpdateUser(id, updates);
+        if (updatedUser != null) {
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
 
 }
