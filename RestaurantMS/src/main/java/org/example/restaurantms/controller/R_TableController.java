@@ -43,7 +43,10 @@ public class R_TableController {
 
     @Operation(summary = "Get a table by ID", description = "Returns a single table by its ID")
     @GetMapping("/{id}")
-    public ResponseEntity<R_Table> getTableById(@PathVariable Long id) {
+    public ResponseEntity<R_Table> getTableById(
+            @Parameter(description = "ID of a table to return")
+            @PathVariable Long id)
+    {
         R_Table table = rTableService.getTableById(id);
         if (table != null) {
             return ResponseEntity.ok(table);
@@ -57,6 +60,7 @@ public class R_TableController {
     @ApiResponse(responseCode = "404", description = "Table not found")
     @PatchMapping("/{id}")
     public ResponseEntity<R_Table> updateTable(
+            @Parameter(description = "ID of a table to update")
             @PathVariable Long id,
             @RequestBody R_Table updatedData) {
 
@@ -74,7 +78,10 @@ public class R_TableController {
             @ApiResponse(responseCode = "404", description = "Table not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTable(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTable(
+            @Parameter(description = "ID of a table to delete")
+            @PathVariable Long id)
+    {
         boolean deleted = rTableService.deleteTable(id);
         if (deleted) {
             return ResponseEntity.noContent().build();

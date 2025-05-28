@@ -69,6 +69,7 @@ public class UserController {
     @ApiResponse(responseCode = "404", description = "User not found")
     @PatchMapping("/{id}")
     public ResponseEntity<User> partiallyUpdateUser(
+            @Parameter(description = "ID of a User to patch")
             @PathVariable Long id,
             @RequestBody @Parameter(description = "User object with fields to update") User updates) {
 
