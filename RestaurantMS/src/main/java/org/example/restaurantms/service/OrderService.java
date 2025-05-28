@@ -1,5 +1,6 @@
 package org.example.restaurantms.service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -79,5 +81,33 @@ public class OrderService {
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    @Transactional
+    public boolean deleteOrderById(Long id) {
+        Optional<Order> orderOptional = orderRepository.findById(id);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+
+            //najpierw usuwamy pozycje zamówienia
+            orderItemRepository.deleteAll(order.getOrderItems());
+
+            // usuwamy dostawe, jeśli istnieje
+            if (order.getDelivery() != null) {
+                deliveryRepository.delete(order.getDelivery());
+            }
+
+            // usuwam samo zamówienie
+            orderRepository.delete(order);
+
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public Optional<Order> getOrderById(Long id) {
+        return orderRepository.findById(id);
     }
 }
