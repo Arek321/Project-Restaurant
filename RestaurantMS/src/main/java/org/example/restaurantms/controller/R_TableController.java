@@ -50,4 +50,20 @@ public class R_TableController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @Operation(summary = "Update table data", description = "Allows to partially update an existing restaurant table")
+    @ApiResponse(responseCode = "200", description = "Table updated successfully")
+    @ApiResponse(responseCode = "404", description = "Table not found")
+    @PatchMapping("/{id}")
+    public ResponseEntity<R_Table> updateTable(
+            @PathVariable Long id,
+            @RequestBody R_Table updatedData) {
+
+        R_Table updatedTable = rTableService.updateTable(id, updatedData);
+        if (updatedTable != null) {
+            return ResponseEntity.ok(updatedTable);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

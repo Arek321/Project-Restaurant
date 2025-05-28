@@ -25,4 +25,16 @@ public class R_TableService {
     public R_Table getTableById(Long id) {
         return rTableRepository.findById(id).orElse(null);
     }
+
+    public R_Table updateTable(Long id, R_Table updatedData) {
+        return rTableRepository.findById(id).map(existingTable -> {
+            if (updatedData.getTableNumber() != 0) {
+                existingTable.setTableNumber(updatedData.getTableNumber());
+            }
+            if (updatedData.getSeatsNumber() != 0) {
+                existingTable.setSeatsNumber(updatedData.getSeatsNumber());
+            }
+            return rTableRepository.save(existingTable);
+        }).orElse(null);
+    }
 }
