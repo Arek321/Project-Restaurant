@@ -17,4 +17,8 @@ public class R_TableService {
     public List<R_Table> getAllTables() {
         return rTableRepository.findAll();
     }
+
+    public R_Table addTable(R_Table table) {
+        return rTableRepository.save(table);
+    }
 }

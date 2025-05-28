@@ -30,4 +30,13 @@ public class R_TableController {
     public ResponseEntity<List<R_Table>> getAllTables() {
         return ResponseEntity.ok(rTableService.getAllTables());
     }
+
+    @Operation(summary = "Create a new Table", description = "Allows to create a new restaurant table")
+    @ApiResponse(responseCode = "201", description = "Table created successfully")
+    @PostMapping("/create")
+    public ResponseEntity<R_Table> createTable(
+            @RequestBody @Parameter(description = "Table object that needs to be created") R_Table table) {
+        R_Table createdTable = rTableService.addTable(table);
+        return new ResponseEntity<>(createdTable, HttpStatus.CREATED);
+    }
 }
