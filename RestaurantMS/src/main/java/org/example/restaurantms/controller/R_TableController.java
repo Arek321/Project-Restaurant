@@ -3,6 +3,7 @@ package org.example.restaurantms.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.restaurantms.entity.R_Table;
 import org.example.restaurantms.repository.R_TableRepository;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tables")
-@Tag(name = "R_Table")
+@Tag(name = "Table")
 public class R_TableController {
 
     private final R_TableService rTableService;
@@ -62,6 +63,21 @@ public class R_TableController {
         R_Table updatedTable = rTableService.updateTable(id, updatedData);
         if (updatedTable != null) {
             return ResponseEntity.ok(updatedTable);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "Delete a table by ID", description = "Deletes a table from the system using its ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Table deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Table not found")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTable(@PathVariable Long id) {
+        boolean deleted = rTableService.deleteTable(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();
         }

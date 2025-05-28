@@ -37,4 +37,13 @@ public class R_TableService {
             return rTableRepository.save(existingTable);
         }).orElse(null);
     }
+
+    public boolean deleteTable(Long id) {
+        if (rTableRepository.existsById(id)) {
+            rTableRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
