@@ -39,4 +39,15 @@ public class R_TableController {
         R_Table createdTable = rTableService.addTable(table);
         return new ResponseEntity<>(createdTable, HttpStatus.CREATED);
     }
+
+    @Operation(summary = "Get a table by ID", description = "Returns a single table by its ID")
+    @GetMapping("/{id}")
+    public ResponseEntity<R_Table> getTableById(@PathVariable Long id) {
+        R_Table table = rTableService.getTableById(id);
+        if (table != null) {
+            return ResponseEntity.ok(table);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

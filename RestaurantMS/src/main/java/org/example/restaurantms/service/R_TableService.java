@@ -21,4 +21,8 @@ public class R_TableService {
     public R_Table addTable(R_Table table) {
         return rTableRepository.save(table);
     }
+
+    public R_Table getTableById(Long id) {
+        return rTableRepository.findById(id).orElse(null);
+    }
 }
