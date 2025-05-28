@@ -1,5 +1,6 @@
 package org.example.restaurantms.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,5 +24,6 @@ public class MenuItem {
     private String allergens;
 
     @OneToMany(mappedBy = "item")
+    @JsonBackReference(value = "item-orderItems")
     private List<OrderItem> orderItems;
 }

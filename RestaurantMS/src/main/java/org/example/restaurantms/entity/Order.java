@@ -1,6 +1,8 @@
 package org.example.restaurantms.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -22,6 +24,7 @@ public class Order {
 
     @ManyToOne
     @JoinColumn(name="user_id")
+    @JsonBackReference(value = "user-orders")
     private User user;
 
     private BigDecimal totalPrice;
@@ -33,12 +36,14 @@ public class Order {
     private OrderStatus status;
 
     @OneToMany(mappedBy = "order")
+    @JsonManagedReference
     private List<OrderItem> orderItems;
 
     @Enumerated(EnumType.STRING)
     private DeliveryType deliveryType; // nazwa może byc mylna, ale chodzi o to czy zamówienie jest typem na dowóz czy na miejscu
 
     @OneToOne(mappedBy = "order")
+    @JsonManagedReference
     private Delivery delivery;
 
 }

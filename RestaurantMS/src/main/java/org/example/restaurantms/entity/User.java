@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 import java.util.List;
 
@@ -33,6 +35,7 @@ public class User {
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference(value = "user-orders")
     private List<Order> orders;
 
 

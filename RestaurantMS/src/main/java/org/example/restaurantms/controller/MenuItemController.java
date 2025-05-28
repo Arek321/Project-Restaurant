@@ -60,4 +60,21 @@ public class MenuItemController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @Operation(summary = "Delete a menu item", description = "Deletes a menu item from the menu by its ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Menu item deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Menu item not found")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMenuItem(
+            @Parameter(description = "ID of menu item to delete")
+            @PathVariable Long id) {
+        boolean deleted = menuItemService.deleteMenuItem(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

@@ -34,4 +34,13 @@ public class MenuItemService {
         }).orElse(null);
     }
 
+    public boolean deleteMenuItem(Long id) {
+        if (menuItemRepository.existsById(id)) {
+            menuItemRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

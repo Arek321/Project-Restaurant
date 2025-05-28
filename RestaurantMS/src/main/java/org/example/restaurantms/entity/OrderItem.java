@@ -2,6 +2,8 @@
 // dodać quantity i price, czego nie mógłbym zrobić zwyczajnie mapująć ManyToMany
 package org.example.restaurantms.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +22,12 @@ public class OrderItem {
 
     @ManyToOne()
     @JoinColumn(name = "order_id")
+    @JsonBackReference
     private Order order;
 
     @ManyToOne()
     @JoinColumn(name = "item_id")
+    @JsonManagedReference(value = "item-orderItems")
     private MenuItem item;
 
     private int quantity;
