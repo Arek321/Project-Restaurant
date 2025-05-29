@@ -36,20 +36,23 @@ public class ReservationController {
         return ResponseEntity.ok(reservations);
     }
 
-    @Operation(summary = "Create a reservation", description = "Creates a reservation for a table for a specific user and time")
+    @Operation(summary = "Create a reservation",
+            description = "Creates a reservation for a table for a specific user and time")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Reservation created successfully"),
             @ApiResponse(responseCode = "404", description = "User or table not found")
     })
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody Map<String, String> payload) {
-        Long userId = Long.parseLong(payload.get("userId"));
-        Long tableId = Long.parseLong(payload.get("tableId"));
-
+    public ResponseEntity<Reservation> createReservation(
+            @Parameter(description = "User ID") @RequestParam Long userId,
+            @Parameter(description = "Table ID") @RequestParam Long tableId,
+            @Parameter(description = "Start time of reservation in format: yyyy-MM-dd HH:mm:ss")
+            @RequestParam String startTime
+    ) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime startTime = LocalDateTime.parse(payload.get("startTime"), formatter);
+        LocalDateTime parsedStartTime = LocalDateTime.parse(startTime, formatter);
 
-        Reservation createdReservation = reservationService.createReservation(userId, tableId, startTime);
+        Reservation createdReservation = reservationService.createReservation(userId, tableId, parsedStartTime);
         return ResponseEntity.ok(createdReservation);
     }
 
@@ -65,6 +68,7 @@ public class ReservationController {
         return ResponseEntity.noContent().build();
     }
 
+
     @Operation(summary = "Update reservation",
             description = "Allows changing the reservation date and/or table")
     @ApiResponses({
@@ -73,8 +77,11 @@ public class ReservationController {
     })
     @PatchMapping("/{id}")
     public ResponseEntity<Reservation> updateReservation(
+            @Parameter(description = "ID of reservation to update")
             @PathVariable Long id,
+            @Parameter(description = "ID of desired table")
             @RequestParam(required = false) Long tableId,
+            @Parameter(description = "New reservation date in format: (yyyy-MM-dd HH:mm:ss)")
             @RequestParam(required = false) String startTime // "yyyy-MM-dd HH:mm:ss"
     ) {
         LocalDateTime parsedStartTime = null;
