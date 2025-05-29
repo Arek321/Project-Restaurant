@@ -10,7 +10,6 @@ import org.example.restaurantms.repository.UserRepository;
 import org.example.restaurantms.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +24,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    @SecurityRequirement(name = "basicAuth")
-    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @Operation(summary = "Retrieve all Users", description = "Returns a list of all Users")
     @GetMapping("/get")
     public List<User> getAllUsers() {
@@ -41,37 +38,6 @@ public class UserController {
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
-
-    @Operation(summary = "Rejestracja użytkownika", description = "Pozwala nowemu użytkownikowi się zarejestrować")
-    @ApiResponse(responseCode = "200", description = "Rejestracja zakończona sukcesem")
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(
-            @Parameter(description = "Nazwa użytkownika (unikalna)")
-            @RequestParam String username,
-
-            @Parameter(description = "Hasło (min. 6 znaków)")
-            @RequestParam String password,
-
-            @Parameter(description = "Adres e-mail użytkownika")
-            @RequestParam String email,
-
-            @Parameter(description = "Imię użytkownika")
-            @RequestParam String first_name,
-
-            @Parameter(description = "Nazwisko użytkownika")
-            @RequestParam String last_name,
-
-            @Parameter(description = "Numer telefonu użytkownika")
-            @RequestParam String phoneNumber,
-
-            @Parameter(description = "Adres zamieszkania")
-            @RequestParam String address
-    ) {
-        String message = userService.registerUser(username, password, email, first_name, last_name, phoneNumber, address);
-        return ResponseEntity.ok(message);
-    }
-
-
 
     @Operation(summary = "Delete a User", description = "Deletes a User by ID")
     @ApiResponse(responseCode = "204", description = "User deleted successfully")
