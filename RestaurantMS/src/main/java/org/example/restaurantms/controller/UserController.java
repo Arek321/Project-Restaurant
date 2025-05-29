@@ -3,12 +3,14 @@ package org.example.restaurantms.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.restaurantms.entity.User;
 import org.example.restaurantms.repository.UserRepository;
 import org.example.restaurantms.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +25,10 @@ public class UserController {
         this.userService = userService;
     }
 
+    @SecurityRequirement(name = "basicAuth")
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @Operation(summary = "Retrieve all Users", description = "Returns a list of all Users")
-    @GetMapping
+    @GetMapping("/get")
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -38,9 +42,40 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Rejestracja użytkownika", description = "Pozwala nowemu użytkownikowi się zarejestrować")
+    @ApiResponse(responseCode = "200", description = "Rejestracja zakończona sukcesem")
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(
+            @Parameter(description = "Nazwa użytkownika (unikalna)")
+            @RequestParam String username,
+
+            @Parameter(description = "Hasło (min. 6 znaków)")
+            @RequestParam String password,
+
+            @Parameter(description = "Adres e-mail użytkownika")
+            @RequestParam String email,
+
+            @Parameter(description = "Imię użytkownika")
+            @RequestParam String first_name,
+
+            @Parameter(description = "Nazwisko użytkownika")
+            @RequestParam String last_name,
+
+            @Parameter(description = "Numer telefonu użytkownika")
+            @RequestParam String phoneNumber,
+
+            @Parameter(description = "Adres zamieszkania")
+            @RequestParam String address
+    ) {
+        String message = userService.registerUser(username, password, email, first_name, last_name, phoneNumber, address);
+        return ResponseEntity.ok(message);
+    }
+
+
+
     @Operation(summary = "Delete a User", description = "Deletes a User by ID")
     @ApiResponse(responseCode = "204", description = "User deleted successfully")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(
             @Parameter(description = "The ID of the User to delete", required = true)
             @PathVariable Long id) {
@@ -51,7 +86,7 @@ public class UserController {
     @Operation(summary = "Get a User by ID", description = "Returns a single User by their ID")
     @ApiResponse(responseCode = "200", description = "User found")
     @ApiResponse(responseCode = "404", description = "User not found")
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<User> getUserById(
             @Parameter(description = "The ID of the User to retrieve", required = true)
             @PathVariable Long id) {
@@ -67,7 +102,7 @@ public class UserController {
     )
     @ApiResponse(responseCode = "200", description = "User updated successfully")
     @ApiResponse(responseCode = "404", description = "User not found")
-    @PatchMapping("/{id}")
+    @PatchMapping("/patch/{id}")
     public ResponseEntity<User> partiallyUpdateUser(
             @Parameter(description = "ID of a User to patch")
             @PathVariable Long id,

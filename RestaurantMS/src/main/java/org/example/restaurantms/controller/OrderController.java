@@ -24,7 +24,7 @@ public class OrderController {
 
     @Operation(summary = "Create a new order", description = "Creates a new order with order items and optional delivery")
     @ApiResponse(responseCode = "201", description = "Order created successfully")
-    @PostMapping
+    @PostMapping("/post")
     public ResponseEntity<Order> createOrder(@RequestBody JsonNode requestBody) {
         Order createdOrder = orderService.createOrder(requestBody);
         return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
@@ -32,7 +32,7 @@ public class OrderController {
 
     @Operation(summary = "Get all orders", description = "Returns a list of all orders")
     @ApiResponse(responseCode = "200", description = "Orders retrieved successfully")
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<Order>> getAllOrders() {
         List<Order> orders = orderService.getAllOrders();
         return ResponseEntity.ok(orders);
@@ -43,7 +43,7 @@ public class OrderController {
             @ApiResponse(responseCode = "204", description = "Order deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Order not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteOrder(
             @Parameter(description = "ID of the Order to delete", required = true)
             @PathVariable Long id) {
@@ -56,7 +56,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Order found"),
             @ApiResponse(responseCode = "404", description = "Order not found")
     })
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<Order> getOrderById(
             @Parameter(description = "ID of the order to retrieve", required = true)
             @PathVariable Long id) {

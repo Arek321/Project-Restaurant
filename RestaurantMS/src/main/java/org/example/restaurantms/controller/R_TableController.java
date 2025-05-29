@@ -26,7 +26,7 @@ public class R_TableController {
 
 
     @Operation(summary = "Get all tables", description = "Returns a list of all restaurant tables")
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<R_Table>> getAllTables() {
         return ResponseEntity.ok(rTableService.getAllTables());
     }
@@ -41,7 +41,7 @@ public class R_TableController {
     }
 
     @Operation(summary = "Get a table by ID", description = "Returns a single table by its ID")
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<R_Table> getTableById(
             @Parameter(description = "ID of a table to return")
             @PathVariable Long id)
@@ -57,7 +57,7 @@ public class R_TableController {
     @Operation(summary = "Update table data", description = "Allows to partially update an existing restaurant table")
     @ApiResponse(responseCode = "200", description = "Table updated successfully")
     @ApiResponse(responseCode = "404", description = "Table not found")
-    @PatchMapping("/{id}")
+    @PatchMapping("/patch/{id}")
     public ResponseEntity<R_Table> updateTable(
             @Parameter(description = "ID of a table to update")
             @PathVariable Long id,
@@ -76,7 +76,7 @@ public class R_TableController {
             @ApiResponse(responseCode = "204", description = "Table deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Table not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteTable(
             @Parameter(description = "ID of a table to delete")
             @PathVariable Long id)

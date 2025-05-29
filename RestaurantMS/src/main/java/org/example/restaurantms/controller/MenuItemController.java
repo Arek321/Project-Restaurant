@@ -23,7 +23,7 @@ public class MenuItemController {
 
     @Operation(summary = "Get all menu items", description = "Returns a list of all available menu items")
     @ApiResponse(responseCode = "200", description = "Menu items retrieved successfully")
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<MenuItem>> getAllMenuItems() {
         List<MenuItem> items = menuItemService.getAllMenuItems();
         return ResponseEntity.ok(items);
@@ -34,8 +34,7 @@ public class MenuItemController {
             @ApiResponse(responseCode = "201", description = "Menu item created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
-
-    @PostMapping
+    @PostMapping("/post")
     public ResponseEntity<MenuItem> createMenuItem(
             @RequestBody @Parameter(description = "New menu item to add") MenuItem menuItem) {
         MenuItem createdItem = menuItemService.createMenuItem(menuItem);
@@ -47,7 +46,7 @@ public class MenuItemController {
             @ApiResponse(responseCode = "200", description = "Menu item updated successfully"),
             @ApiResponse(responseCode = "404", description = "Menu item not found")
     })
-    @PatchMapping("/{id}")
+    @PatchMapping("/patch/{id}")
     public ResponseEntity<MenuItem> partiallyUpdateMenuItem(
             @Parameter(description = "ID of a menu item to update")
             @PathVariable Long id,
@@ -66,7 +65,7 @@ public class MenuItemController {
             @ApiResponse(responseCode = "204", description = "Menu item deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Menu item not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteMenuItem(
             @Parameter(description = "ID of menu item to delete")
             @PathVariable Long id) {

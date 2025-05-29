@@ -26,7 +26,7 @@ public class DeliveryController {
 
     @Operation(summary = "Get all deliveries", description = "Returns a list of created deliveries")
     @ApiResponse(responseCode = "200", description = "List returned successfully")
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<Delivery>> getAllDeliveries() {
         List<Delivery> deliveries = deliveryService.getAllDeliveries();
         return ResponseEntity.ok(deliveries);
@@ -37,12 +37,23 @@ public class DeliveryController {
             @ApiResponse(responseCode = "200", description = "Delivery created successfully"),
             @ApiResponse(responseCode = "400", description = "Error during validation of delivery data or order")
     })
-    @PostMapping
+    @PostMapping("/post")
     public ResponseEntity<Delivery> createDelivery(
             @RequestParam Long orderId,
             @RequestParam String address
     ) {
         Delivery delivery = deliveryService.createDelivery(orderId, address);
         return ResponseEntity.ok(delivery);
+    }
+
+    @Operation(summary = "Delete delivery", description = "Deletes a delivery by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Delivery deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "Delivery not found")
+    })
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteDelivery(@PathVariable Long id) {
+        deliveryService.deleteDeliveryById(id);
+        return ResponseEntity.ok("Delivery deleted successfully");
     }
 }

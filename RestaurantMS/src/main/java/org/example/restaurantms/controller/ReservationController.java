@@ -30,7 +30,7 @@ public class ReservationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list")
     })
-    @GetMapping
+    @GetMapping("/get")
     public ResponseEntity<List<Reservation>> getAllReservations() {
         List<Reservation> reservations = reservationService.getAllReservations();
         return ResponseEntity.ok(reservations);
@@ -42,7 +42,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "200", description = "Reservation created successfully"),
             @ApiResponse(responseCode = "404", description = "User or table not found")
     })
-    @PostMapping
+    @PostMapping("/post")
     public ResponseEntity<Reservation> createReservation(
             @Parameter(description = "User ID") @RequestParam Long userId,
             @Parameter(description = "Table ID") @RequestParam Long tableId,
@@ -60,7 +60,7 @@ public class ReservationController {
     @ApiResponses(value = {@ApiResponse(responseCode = "204", description = "Reservation deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Reservation not found")
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteReservation(
             @Parameter(description = "Id of reservation to cancel")
             @PathVariable Long id) {
@@ -75,7 +75,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "200", description = "Reservation updated successfully"),
             @ApiResponse(responseCode = "404", description = "Reservation or table not found")
     })
-    @PatchMapping("/{id}")
+    @PatchMapping("/patch/{id}")
     public ResponseEntity<Reservation> updateReservation(
             @Parameter(description = "ID of reservation to update")
             @PathVariable Long id,
