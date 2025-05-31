@@ -91,4 +91,21 @@ public class ReservationServiceTest {
         assertTrue(exception.getMessage().contains("Restauracja jest czynna"));
     }
 
+    @Test
+    @DisplayName("Should throw exception if reservation conflicts with another")
+    public void testCreateReservationConflict() {
+        Long userId = 1L;
+        Long tableId = 2L;
+        LocalDateTime startTime = LocalDateTime.of(2025, 6, 1, 12, 0);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(tableRepository.findById(tableId)).thenReturn(Optional.of(new R_Table()));
+        when(reservationRepository.isTableReservedInTimeRange(tableId, startTime, startTime.plusHours(2), -1L)).thenReturn(true);
+
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                reservationService.createReservation(userId, tableId, startTime));
+
+        assertTrue(exception.getMessage().contains("Stolik jest już zarezerwowany"));
+    }
+
 }
