@@ -130,4 +130,38 @@ public class OrderServiceTest {
         verify(orderRepository).findById(99L);
     }
 
+    @Test
+    @DisplayName("Should delete order with items and delivery if present")
+    public void testDeleteOrderSuccess() {
+        Order order = new Order();
+        order.setId(1L);
+
+        OrderItem item1 = new OrderItem();
+        OrderItem item2 = new OrderItem();
+        order.setOrderItems(Arrays.asList(item1, item2));
+
+        Delivery delivery = new Delivery();
+        order.setDelivery(delivery);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        boolean result = orderService.deleteOrderById(1L);
+
+        assertTrue(result);
+        verify(orderItemRepository).deleteAll(order.getOrderItems());
+        verify(deliveryRepository).delete(delivery);
+        verify(orderRepository).delete(order);
+    }
+
+    @Test
+    @DisplayName("Should return false if trying to delete non-existent order")
+    public void testDeleteOrderNotFound() {
+        when(orderRepository.findById(123L)).thenReturn(Optional.empty());
+
+        boolean result = orderService.deleteOrderById(123L);
+
+        assertFalse(result);
+        verify(orderRepository, never()).delete(any());
+    }
+
 }
