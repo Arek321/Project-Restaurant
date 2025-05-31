@@ -59,5 +59,19 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findById(1L);
     }
 
+    @Test
+    @DisplayName("Should create a new user")
+    public void testCreateUser() {
+        User newUser = new User();
+        newUser.setUsername("NewUser");
+
+        when(userRepository.save(newUser)).thenReturn(newUser);
+
+        User createdUser = userService.createUser(newUser);
+
+        assertNotNull(createdUser);
+        assertEquals("NewUser", createdUser.getUsername());
+        verify(userRepository, times(1)).save(newUser);
+    }
 
 }
