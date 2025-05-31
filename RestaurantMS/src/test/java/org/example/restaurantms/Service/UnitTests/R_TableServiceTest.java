@@ -74,4 +74,37 @@ public class R_TableServiceTest {
         verify(rTableRepository, times(1)).findById(1L);
     }
 
+    @Test
+    @DisplayName("Should return null if table with given ID does not exist")
+    public void testGetTableByIdNotExists() {
+        when(rTableRepository.findById(99L)).thenReturn(Optional.empty());
+
+        R_Table result = rTableService.getTableById(99L);
+
+        assertNull(result);
+        verify(rTableRepository, times(1)).findById(99L);
+    }
+
+    @Test
+    @DisplayName("Should update table fields if valid data provided")
+    public void testUpdateTableSuccess() {
+        R_Table existingTable = new R_Table();
+        existingTable.setId(1L);
+        existingTable.setTableNumber(1);
+        existingTable.setSeatsNumber(4);
+
+        R_Table updates = new R_Table();
+        updates.setTableNumber(2);
+        updates.setSeatsNumber(6);
+
+        when(rTableRepository.findById(1L)).thenReturn(Optional.of(existingTable));
+        when(rTableRepository.save(existingTable)).thenReturn(existingTable);
+
+        R_Table result = rTableService.updateTable(1L, updates);
+
+        assertNotNull(result);
+        assertEquals(2, result.getTableNumber());
+        assertEquals(6, result.getSeatsNumber());
+        verify(rTableRepository).save(existingTable);
+    }
 }
