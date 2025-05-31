@@ -42,5 +42,21 @@ public class R_TableServiceTest {
         verify(rTableRepository, times(1)).findAll();
     }
 
+    @Test
+    @DisplayName("Should add a new table")
+    public void testAddTable() {
+        R_Table table = new R_Table();
+        table.setTableNumber(5);
+        table.setSeatsNumber(4);
+
+        when(rTableRepository.save(table)).thenReturn(table);
+
+        R_Table result = rTableService.addTable(table);
+
+        assertNotNull(result);
+        assertEquals(5, result.getTableNumber());
+        verify(rTableRepository, times(1)).save(table);
+    }
+
 
 }
