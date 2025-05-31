@@ -44,8 +44,10 @@ public class ReservationService {
 
         //Walidacja godzin otwarcia
         if (time.isBefore(LocalTime.of(10, 0)) || time.isAfter(LocalTime.of(20, 0))) {
-            throw new RuntimeException("Restauracja jest czynna od 10:00 do 22:00. Rezerwacje mogą zaczynać się między 10:00 a 20:00.");
-        }
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Restauracja jest czynna od 10:00 do 22:00. Rezerwacje mogą zaczynać się między 10:00 a 20:00."
+            );        }
 
         //Walidacja kolizji z innymi rezerwacjami
         boolean conflict = reservationRepository.isTableReservedInTimeRange(

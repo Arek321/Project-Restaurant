@@ -1,6 +1,7 @@
 package org.example.restaurantms.service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.restaurantms.entity.*;
 import org.example.restaurantms.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -48,7 +50,8 @@ public class OrderService {
             int quantity = itemNode.get("quantity").asInt();
 
             MenuItem menuItem = menuItemRepository.findById(menuItemId)
-                    .orElseThrow(() -> new RuntimeException("MenuItem not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "MenuItem not found"));
+
 
             BigDecimal itemPrice = menuItem.getPrice().multiply(BigDecimal.valueOf(quantity));
 

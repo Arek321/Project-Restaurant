@@ -298,6 +298,49 @@ public class UserReservationTableIntegrationTest {
                 );
     }
 
+    @Test
+    public void testReservationOutsideOpeningHours() throws Exception {
+        // Tworzenie użytkownika
+        ObjectNode userRequest = objectMapper.createObjectNode();
+        userRequest.put("username", "night_user");
+        userRequest.put("password", "test123");
+        userRequest.put("email", "night@example.com");
 
+        String userResponse = mockMvc.perform(post("/api/users/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userRequest.toString()))
+                .andReturn().getResponse().getContentAsString();
+        User user = objectMapper.readValue(userResponse, User.class);
+
+        // Tworzenie stolika
+        ObjectNode tableRequest = objectMapper.createObjectNode();
+        tableRequest.put("tableNumber", 99);
+        tableRequest.put("seatsNumber", 4);
+
+        String tableResponse = mockMvc.perform(post("/api/tables/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(tableRequest.toString()))
+                .andReturn().getResponse().getContentAsString();
+        R_Table table = objectMapper.readValue(tableResponse, R_Table.class);
+
+        // Rezerwacja poza godzinami (21:00)
+        String lateTime = LocalDateTime.now()
+                .withHour(21).withMinute(0).withSecond(0).withNano(0)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        mockMvc.perform(post("/api/reservations/post")
+                        .param("userId", String.valueOf(user.getId()))
+                        .param("tableId", String.valueOf(table.getId()))
+                        .param("startTime", lateTime))
+                .andExpect(status().isBadRequest()) // POPRAWKA TUTAJ
+                .andExpect(result ->
+                        Assertions.assertTrue(result.getResolvedException() instanceof ResponseStatusException))
+                .andExpect(result -> {
+                    Throwable resolved = result.getResolvedException();
+                    Assertions.assertTrue(resolved instanceof ResponseStatusException);
+                    ResponseStatusException ex = (ResponseStatusException) resolved;
+                    Assertions.assertTrue(ex.getReason().contains("Restauracja jest czynna od 10:00 do 22:00"));
+                });
+    }
 
 }
