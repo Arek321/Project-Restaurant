@@ -84,4 +84,29 @@ public class UserServiceTest {
         verify(userRepository, times(1)).deleteById(userId);
     }
 
+    @Test
+    @DisplayName("Should partially update a user")
+    public void testPartiallyUpdateUser() {
+        Long userId = 1L;
+        User existingUser = new User();
+        existingUser.setId(userId);
+        existingUser.setUsername("OldName");
+        existingUser.setEmail("old@example.com");
+
+        User updates = new User();
+        updates.setUsername("NewName");
+        updates.setEmail("new@example.com");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(existingUser)).thenReturn(existingUser);
+
+        User updatedUser = userService.partiallyUpdateUser(userId, updates);
+
+        assertNotNull(updatedUser);
+        assertEquals("NewName", updatedUser.getUsername());
+        assertEquals("new@example.com", updatedUser.getEmail());
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, times(1)).save(existingUser);
+    }
+
 }
