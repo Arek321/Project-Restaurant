@@ -86,4 +86,48 @@ public class DeliveryServiceTest {
         verify(deliveryRepository, never()).save(any());
     }
 
+    @Test
+    @DisplayName("Should throw exception when order already has a delivery")
+    public void testCreateDeliveryAlreadyExists() {
+        Long orderId = 1L;
+
+        Delivery existingDelivery = new Delivery();
+        Order order = new Order();
+        order.setId(orderId);
+        order.setDelivery(existingDelivery);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                deliveryService.createDelivery(orderId, "Address"));
+
+        assertTrue(exception.getMessage().contains("To zamówienie ma już przypisaną dostawę"));
+        verify(orderRepository).findById(orderId);
+        verify(deliveryRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should delete delivery by ID if it exists")
+    public void testDeleteDeliverySuccess() {
+        Long deliveryId = 1L;
+
+        when(deliveryRepository.existsById(deliveryId)).thenReturn(true);
+
+        assertDoesNotThrow(() -> deliveryService.deleteDeliveryById(deliveryId));
+        verify(deliveryRepository).deleteById(deliveryId);
+    }
+
+    @Test
+    @DisplayName("Should throw exception when trying to delete non-existent delivery")
+    public void testDeleteDeliveryNotFound() {
+        Long deliveryId = 123L;
+
+        when(deliveryRepository.existsById(deliveryId)).thenReturn(false);
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                deliveryService.deleteDeliveryById(deliveryId));
+
+        assertTrue(exception.getMessage().contains("Delivery not found with id: " + deliveryId));
+        verify(deliveryRepository, never()).deleteById(deliveryId);
+    }
 }
