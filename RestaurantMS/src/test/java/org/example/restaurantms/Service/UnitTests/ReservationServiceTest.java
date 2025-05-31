@@ -133,6 +133,34 @@ public class ReservationServiceTest {
         verify(reservationRepository, never()).delete(any());
     }
 
+    @Test
+    @DisplayName("Should update reservation successfully")
+    public void testUpdateReservationSuccess() {
+        Long reservationId = 1L;
+        Long newTableId = 2L;
+        LocalDateTime newStartTime = LocalDateTime.of(2025, 6, 2, 11, 0);
 
+        R_Table oldTable = new R_Table();
+        oldTable.setId(1L);
+
+        R_Table newTable = new R_Table();
+        newTable.setId(newTableId);
+
+        Reservation reservation = new Reservation();
+        reservation.setId(reservationId);
+        reservation.setR_table(oldTable);
+        reservation.setStartTime(LocalDateTime.of(2025, 6, 1, 12, 0));
+
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+        when(reservationRepository.isTableReservedInTimeRange(newTableId, newStartTime, newStartTime.plusHours(2), reservationId)).thenReturn(false);
+        when(tableRepository.findById(newTableId)).thenReturn(Optional.of(newTable));
+        when(reservationRepository.save(reservation)).thenReturn(reservation);
+
+        Reservation result = reservationService.updateReservation(reservationId, newTableId, newStartTime);
+
+        assertEquals(newStartTime, result.getStartTime());
+        assertEquals(newTable, result.getR_table());
+        verify(reservationRepository).save(reservation);
+    }
 
 }
