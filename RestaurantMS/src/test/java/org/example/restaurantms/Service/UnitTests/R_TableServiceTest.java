@@ -107,4 +107,41 @@ public class R_TableServiceTest {
         assertEquals(6, result.getSeatsNumber());
         verify(rTableRepository).save(existingTable);
     }
+
+    @Test
+    @DisplayName("Should return null when updating non-existent table")
+    public void testUpdateTableNotExists() {
+        R_Table updates = new R_Table();
+        updates.setTableNumber(2);
+        updates.setSeatsNumber(6);
+
+        when(rTableRepository.findById(100L)).thenReturn(Optional.empty());
+
+        R_Table result = rTableService.updateTable(100L, updates);
+
+        assertNull(result);
+        verify(rTableRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should delete table if it exists")
+    public void testDeleteTableSuccess() {
+        when(rTableRepository.existsById(1L)).thenReturn(true);
+
+        boolean result = rTableService.deleteTable(1L);
+
+        assertTrue(result);
+        verify(rTableRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("Should return false when deleting non-existent table")
+    public void testDeleteTableNotExists() {
+        when(rTableRepository.existsById(100L)).thenReturn(false);
+
+        boolean result = rTableService.deleteTable(100L);
+
+        assertFalse(result);
+        verify(rTableRepository, never()).deleteById(any());
+    }
 }
