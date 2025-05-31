@@ -20,6 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.junit.jupiter.Container;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -34,13 +35,6 @@ public class UserReservationTableIntegrationTest {
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");
 
-    @DynamicPropertySource
-    static void configure(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -49,49 +43,53 @@ public class UserReservationTableIntegrationTest {
 
     @Test
     public void testCreateReservationWithUserAndTable() throws Exception {
-        // tworze uzytkownika
-        User user = new User();
-        user.setUsername("reservation_user");
-        user.setPassword("test123");
-        user.setEmail("email@example.com");
+        // tworze usera
+        ObjectNode userRequest = objectMapper.createObjectNode();
+        userRequest.put("username", "reservation_user");
+        userRequest.put("password", "test123");
+        userRequest.put("email", "email@example.com");
 
-        String userJson = objectMapper.writeValueAsString(user);
-
-        String userResponse = mockMvc.perform(post("/api/users")
+        String userResponse = mockMvc.perform(post("/api/users/create")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userJson))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(userRequest.toString()))
                 .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
         User createdUser = objectMapper.readValue(userResponse, User.class);
 
         // tworze stolik
-        R_Table table = new R_Table();
-        table.setTableNumber(10);
-        table.setSeatsNumber(4);
+        ObjectNode tableRequest = objectMapper.createObjectNode();
+        tableRequest.put("tableNumber", 10);
+        tableRequest.put("seatsNumber", 4);
 
-        String tableJson = objectMapper.writeValueAsString(table);
-
-        String tableResponse = mockMvc.perform(post("/api/tables")
+        String tableResponse = mockMvc.perform(post("/api/tables/create")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(tableJson))
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(tableRequest.toString()))
                 .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
         R_Table createdTable = objectMapper.readValue(tableResponse, R_Table.class);
 
-        // tworze rezerwacje
-        ObjectNode reservationRequest = objectMapper.createObjectNode();
-        reservationRequest.put("userId", createdUser.getId());
-        reservationRequest.put("tableId", createdTable.getId());
-        reservationRequest.put("startTime", LocalDateTime.now().withSecond(0).withNano(0).plusHours(1).toString());
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime safeTime = now.withHour(12).withMinute(0).withSecond(0).withNano(0);
 
-        mockMvc.perform(post("/api/reservations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(reservationRequest)))
+        // tworze rezerwacje
+        String startTime = safeTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        mockMvc.perform(post("/api/reservations/post")
+                        .param("userId", String.valueOf(createdUser.getId()))
+                        .param("tableId", String.valueOf(createdTable.getId()))
+                        .param("startTime", startTime)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.user.id", is(createdUser.getId().intValue())))
-                .andExpect(jsonPath("$.r_table.id", is(createdTable.getId().intValue())))
+                .andExpect(jsonPath("$.userId", is(createdUser.getId().intValue())))
+                .andExpect(jsonPath("$.tableId", is(createdTable.getId().intValue())))
                 .andExpect(jsonPath("$.startTime").exists())
                 .andExpect(jsonPath("$.endTime").exists());
     }

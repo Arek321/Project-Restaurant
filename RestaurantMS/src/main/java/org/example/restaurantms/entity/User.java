@@ -1,5 +1,6 @@
 package org.example.restaurantms.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -32,11 +33,11 @@ public class User {
     private RoleType role;
 
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference
+    @JsonIgnore
     private List<Reservation> reservations;
 
     @OneToMany(mappedBy = "user")
-    @JsonManagedReference(value = "user-orders")
+    @JsonIgnore
     private List<Order> orders;
 
 

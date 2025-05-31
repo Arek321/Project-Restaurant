@@ -3,6 +3,7 @@
 package org.example.restaurantms.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,12 +23,12 @@ public class OrderItem {
 
     @ManyToOne()
     @JoinColumn(name = "order_id")
-    @JsonBackReference
+    @JsonIgnore
     private Order order;
 
     @ManyToOne()
     @JoinColumn(name = "item_id")
-    @JsonManagedReference(value = "item-orderItems")
+    @JsonIgnore
     private MenuItem item;
 
     private int quantity;

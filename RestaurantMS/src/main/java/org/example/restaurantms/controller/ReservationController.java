@@ -9,6 +9,7 @@ import org.example.restaurantms.entity.Reservation;
 import org.example.restaurantms.service.ReservationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.example.restaurantms.DTO.ReservationDTO;
 
 
 import java.time.LocalDateTime;
@@ -43,17 +44,24 @@ public class ReservationController {
             @ApiResponse(responseCode = "404", description = "User or table not found")
     })
     @PostMapping("/post")
-    public ResponseEntity<Reservation> createReservation(
-            @Parameter(description = "User ID") @RequestParam Long userId,
-            @Parameter(description = "Table ID") @RequestParam Long tableId,
-            @Parameter(description = "Start time of reservation in format: yyyy-MM-dd HH:mm:ss")
+    public ResponseEntity<ReservationDTO> createReservation(
+            @RequestParam Long userId,
+            @RequestParam Long tableId,
             @RequestParam String startTime
     ) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime parsedStartTime = LocalDateTime.parse(startTime, formatter);
 
         Reservation createdReservation = reservationService.createReservation(userId, tableId, parsedStartTime);
-        return ResponseEntity.ok(createdReservation);
+
+        ReservationDTO dto = new ReservationDTO();
+        dto.setId(createdReservation.getId());
+        dto.setStartTime(createdReservation.getStartTime().toString());
+        dto.setEndTime(createdReservation.getEndTime().toString());
+        dto.setUserId(createdReservation.getUser().getId());
+        dto.setTableId(createdReservation.getR_table().getId());
+
+        return ResponseEntity.status(201).body(dto);
     }
 
     @Operation(summary = "Delete a reservation", description = "Cancels and deletes an existing reservation by its ID")
