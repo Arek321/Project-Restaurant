@@ -48,5 +48,32 @@ public class ReservationServiceTest {
         verify(reservationRepository, times(1)).findAll();
     }
 
+    @Test
+    @DisplayName("Should create a new reservation successfully")
+    public void testCreateReservationSuccess() {
+        Long userId = 1L;
+        Long tableId = 2L;
+        LocalDateTime startTime = LocalDateTime.of(2025, 6, 1, 12, 0);
+
+        User user = new User();
+        user.setId(userId);
+
+        R_Table table = new R_Table();
+        table.setId(tableId);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(tableRepository.findById(tableId)).thenReturn(Optional.of(table));
+        when(reservationRepository.isTableReservedInTimeRange(tableId, startTime, startTime.plusHours(2), -1L)).thenReturn(false);
+        when(reservationRepository.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+
+        Reservation result = reservationService.createReservation(userId, tableId, startTime);
+
+        assertNotNull(result);
+        assertEquals(user, result.getUser());
+        assertEquals(table, result.getR_table());
+        assertEquals(startTime.plusHours(2), result.getEndTime());
+        verify(reservationRepository).save(any(Reservation.class));
+    }
+
 
 }
