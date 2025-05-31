@@ -53,7 +53,10 @@ public class ReservationService {
         );
 
         if (conflict) {
-            throw new RuntimeException("Stolik jest już zarezerwowany w podanym czasie (±2h).");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Stolik jest już zarezerwowany w podanym czasie (±2h)."
+            );
         }
 
         Reservation reservation = new Reservation();
@@ -96,7 +99,10 @@ public class ReservationService {
         );
 
         if (conflict) {
-            throw new RuntimeException("Stolik jest już zarezerwowany w podanym czasie (±2h).");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Stolik jest już zarezerwowany w podanym czasie (±2h)."
+            );
         }
 
         // jesli chce nowy stolik to ustawiam go
