@@ -42,7 +42,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private DeliveryType deliveryType; // nazwa może byc mylna, ale chodzi o to czy zamówienie jest typem na dowóz czy na miejscu
 
-    @OneToOne(mappedBy = "order")
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Delivery delivery;
 

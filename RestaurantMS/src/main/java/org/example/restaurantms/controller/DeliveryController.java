@@ -56,4 +56,6 @@ public class DeliveryController {
         deliveryService.deleteDeliveryById(id);
         return ResponseEntity.ok("Delivery deleted successfully");
     }
+
+
 }

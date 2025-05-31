@@ -485,6 +485,123 @@ public class UserOrderMenuItemDeliveryIntegrationTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    public void testCreateDelivery() throws Exception {
+        // tworze usera
+        ObjectNode user = objectMapper.createObjectNode();
+        user.put("username", "delivery_test_user");
+        user.put("password", "pass123");
+        user.put("email", "deliveryuser@example.com");
 
+        String userResponse = mockMvc.perform(post("/api/users/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(user.toString()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Long userId = objectMapper.readTree(userResponse).get("id").asLong();
+
+        // tworze menu item
+        ObjectNode menuItem = objectMapper.createObjectNode();
+        menuItem.put("name", "Burger");
+        menuItem.put("price", 25.0);
+        menuItem.put("description", "Beefy");
+
+        String itemResponse = mockMvc.perform(post("/api/menu/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(menuItem.toString()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Long menuItemId = objectMapper.readTree(itemResponse).get("id").asLong();
+
+        // 3. tworze delivery
+        ObjectNode orderRequest = objectMapper.createObjectNode();
+        orderRequest.put("userId", userId);
+        orderRequest.put("deliveryType", "ON_SITE");
+
+        ObjectNode item = objectMapper.createObjectNode();
+        item.put("menuItemId", menuItemId);
+        item.put("quantity", 2);
+        orderRequest.set("items", objectMapper.createArrayNode().add(item));
+
+        String orderResponse = mockMvc.perform(post("/api/orders/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderRequest.toString()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Long orderId = objectMapper.readTree(orderResponse).get("id").asLong();
+
+        // tworze delivery
+        mockMvc.perform(post("/api/deliveries/post")
+                        .param("orderId", orderId.toString())
+                        .param("address", "Testowa 123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.address").value("Testowa 123"))
+                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
+    }
+
+    @Test
+    public void testGetAllDeliveries() throws Exception {
+        mockMvc.perform(get("/api/deliveries/get"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    public void testDeleteDelivery() throws Exception {
+        // tworze usera
+        ObjectNode user = objectMapper.createObjectNode();
+        user.put("username", "delete_delivery_user");
+        user.put("password", "pass123");
+        user.put("email", "delete@example.com");
+
+        String userResponse = mockMvc.perform(post("/api/users/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(user.toString()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Long userId = objectMapper.readTree(userResponse).get("id").asLong();
+
+        //  Tworzenie pozycji w menu
+        ObjectNode menuItem = objectMapper.createObjectNode();
+        menuItem.put("name", "Makaron");
+        menuItem.put("price", 20.0);
+        menuItem.put("description", "Z sosem");
+
+        String itemResponse = mockMvc.perform(post("/api/menu/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(menuItem.toString()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Long menuItemId = objectMapper.readTree(itemResponse).get("id").asLong();
+
+        // 3. Tworzenie zamówienia
+        ObjectNode orderRequest = objectMapper.createObjectNode();
+        orderRequest.put("userId", userId);
+        orderRequest.put("deliveryType", "ON_SITE");
+
+        ObjectNode item = objectMapper.createObjectNode();
+        item.put("menuItemId", menuItemId);
+        item.put("quantity", 1);
+        orderRequest.set("items", objectMapper.createArrayNode().add(item));
+
+        String orderResponse = mockMvc.perform(post("/api/orders/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderRequest.toString()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Long orderId = objectMapper.readTree(orderResponse).get("id").asLong();
+
+        // tworze dostawe
+        String deliveryResponse = mockMvc.perform(post("/api/deliveries/post")
+                        .param("orderId", orderId.toString())
+                        .param("address", "ul. Kasacja 999"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        Long deliveryId = objectMapper.readTree(deliveryResponse).get("id").asLong();
+
+        // usuwam dostawe
+        mockMvc.perform(delete("/api/deliveries/delete/" + deliveryId))
+                .andExpect(status().isOk());
+    }
 
 }
