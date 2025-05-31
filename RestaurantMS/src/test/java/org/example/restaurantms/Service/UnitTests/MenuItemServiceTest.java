@@ -90,5 +90,43 @@ public class MenuItemServiceTest {
         verify(menuItemRepository).save(existingItem);
     }
 
+    @Test
+    @DisplayName("Should return null when trying to update non-existent item")
+    public void testPartiallyUpdateMenuItemNotFound() {
+        Long itemId = 999L;
+        MenuItem updates = new MenuItem();
+        updates.setName("DoesNotMatter");
+
+        when(menuItemRepository.findById(itemId)).thenReturn(Optional.empty());
+
+        MenuItem result = menuItemService.partiallyUpdateMenuItem(itemId, updates);
+
+        assertNull(result);
+        verify(menuItemRepository).findById(itemId);
+        verify(menuItemRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Should delete menu item if it exists")
+    public void testDeleteMenuItemSuccess() {
+        when(menuItemRepository.existsById(1L)).thenReturn(true);
+
+        boolean result = menuItemService.deleteMenuItem(1L);
+
+        assertTrue(result);
+        verify(menuItemRepository).deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("Should return false when deleting non-existent item")
+    public void testDeleteMenuItemNotFound() {
+        when(menuItemRepository.existsById(99L)).thenReturn(false);
+
+        boolean result = menuItemService.deleteMenuItem(99L);
+
+        assertFalse(result);
+        verify(menuItemRepository, never()).deleteById(any());
+    }
+
 
 }
