@@ -74,4 +74,14 @@ public class UserServiceTest {
         verify(userRepository, times(1)).save(newUser);
     }
 
+    @Test
+    @DisplayName("Should delete an existing user by ID")
+    public void testDeleteUser() {
+        Long userId = 1L;
+
+        userService.deleteUser(userId);
+
+        verify(userRepository, times(1)).deleteById(userId);
+    }
+
 }
