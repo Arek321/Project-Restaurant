@@ -108,4 +108,18 @@ public class ReservationServiceTest {
         assertTrue(exception.getMessage().contains("Stolik jest już zarezerwowany"));
     }
 
+    @Test
+    @DisplayName("Should delete reservation if it exists")
+    public void testDeleteReservationSuccess() {
+        Long reservationId = 1L;
+        Reservation reservation = new Reservation();
+        reservation.setId(reservationId);
+
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(reservation));
+
+        reservationService.deleteReservation(reservationId);
+
+        verify(reservationRepository).delete(reservation);
+    }
+
 }
