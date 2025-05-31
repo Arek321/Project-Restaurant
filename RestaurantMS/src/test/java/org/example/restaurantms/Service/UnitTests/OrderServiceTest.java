@@ -104,4 +104,30 @@ public class OrderServiceTest {
         verify(orderRepository).findAll();
     }
 
+    @Test
+    @DisplayName("Should get order by ID if it exists")
+    public void testGetOrderByIdFound() {
+        Order order = new Order();
+        order.setId(1L);
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+
+        Optional<Order> result = orderService.getOrderById(1L);
+
+        assertTrue(result.isPresent());
+        assertEquals(1L, result.get().getId());
+        verify(orderRepository).findById(1L);
+    }
+
+    @Test
+    @DisplayName("Should return empty optional if order not found")
+    public void testGetOrderByIdNotFound() {
+        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
+
+        Optional<Order> result = orderService.getOrderById(99L);
+
+        assertFalse(result.isPresent());
+        verify(orderRepository).findById(99L);
+    }
+
 }
