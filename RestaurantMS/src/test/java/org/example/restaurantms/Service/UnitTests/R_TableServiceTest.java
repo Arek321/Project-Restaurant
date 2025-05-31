@@ -58,5 +58,20 @@ public class R_TableServiceTest {
         verify(rTableRepository, times(1)).save(table);
     }
 
+    @Test
+    @DisplayName("Should return table by ID if exists")
+    public void testGetTableByIdExists() {
+        R_Table table = new R_Table();
+        table.setId(1L);
+        table.setTableNumber(10);
+
+        when(rTableRepository.findById(1L)).thenReturn(Optional.of(table));
+
+        R_Table result = rTableService.getTableById(1L);
+
+        assertNotNull(result);
+        assertEquals(10, result.getTableNumber());
+        verify(rTableRepository, times(1)).findById(1L);
+    }
 
 }
