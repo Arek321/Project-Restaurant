@@ -417,5 +417,74 @@ public class UserOrderMenuItemDeliveryIntegrationTest {
                 .andExpect(content().string(org.hamcrest.Matchers.containsString("\"quantity\":3")));
     }
 
+    @Test
+    public void testCreateAndGetMenuItem() throws Exception {
+        ObjectNode menuItem = objectMapper.createObjectNode();
+        menuItem.put("name", "Pizza");
+        menuItem.put("price", 30.00);
+        menuItem.put("description", "Cheesy pizza");
+
+        mockMvc.perform(post("/api/menu/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(menuItem.toString()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.name").value("Pizza"));
+
+        mockMvc.perform(get("/api/menu/get"))
+                .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void testPatchMenuItem() throws Exception {
+        // tworze menuitem
+        ObjectNode item = objectMapper.createObjectNode();
+        item.put("name", "Makaron");
+        item.put("price", 20.0);
+        item.put("description", "Z sosem pomidorowym");
+
+        String response = mockMvc.perform(post("/api/menu/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(item.toString()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        Long id = objectMapper.readTree(response).get("id").asLong();
+
+        //patchuje
+        ObjectNode patch = objectMapper.createObjectNode();
+        patch.put("price", 25.0);
+
+        mockMvc.perform(patch("/api/menu/patch/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(patch.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price").value(25.0));
+    }
+
+    @Test
+    public void testDeleteMenuItem() throws Exception {
+        ObjectNode item = objectMapper.createObjectNode();
+        item.put("name", "Lody");
+        item.put("price", 10.0);
+        item.put("description", "Waniliowe");
+
+        String response = mockMvc.perform(post("/api/menu/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(item.toString()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+
+        Long id = objectMapper.readTree(response).get("id").asLong();
+
+        mockMvc.perform(delete("/api/menu/delete/" + id))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(delete("/api/menu/delete/" + id))
+                .andExpect(status().isNotFound());
+    }
+
+
 
 }
