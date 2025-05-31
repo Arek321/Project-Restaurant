@@ -43,5 +43,21 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findAll();
     }
 
+    @Test
+    @DisplayName("Should return user by ID")
+    public void testGetUserById() {
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("TestUser");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        Optional<User> result = userService.getUserById(1L);
+
+        assertTrue(result.isPresent());
+        assertEquals("TestUser", result.get().getUsername());
+        verify(userRepository, times(1)).findById(1L);
+    }
+
 
 }
