@@ -109,4 +109,20 @@ public class UserServiceTest {
         verify(userRepository, times(1)).save(existingUser);
     }
 
+    @Test
+    @DisplayName("Should return null when trying to update non-existing user")
+    public void testPartiallyUpdateNonExistingUser() {
+        Long userId = 99L;
+        User updates = new User();
+        updates.setUsername("DoesNotMatter");
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        User result = userService.partiallyUpdateUser(userId, updates);
+
+        assertNull(result);
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, never()).save(any());
+    }
+
 }
