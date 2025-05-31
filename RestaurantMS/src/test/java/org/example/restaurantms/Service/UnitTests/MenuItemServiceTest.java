@@ -43,5 +43,52 @@ public class MenuItemServiceTest {
         verify(menuItemRepository, times(1)).findAll();
     }
 
+    @Test
+    @DisplayName("Should create a new menu item")
+    public void testCreateMenuItem() {
+        MenuItem newItem = new MenuItem();
+        newItem.setName("Lasagna");
+        newItem.setPrice(BigDecimal.valueOf(25.0));
+
+        when(menuItemRepository.save(newItem)).thenReturn(newItem);
+
+        MenuItem result = menuItemService.createMenuItem(newItem);
+
+        assertNotNull(result);
+        assertEquals("Lasagna", result.getName());
+        assertEquals(BigDecimal.valueOf(25.0), result.getPrice());
+        verify(menuItemRepository, times(1)).save(newItem);
+    }
+
+    @Test
+    @DisplayName("Should update existing menu item partially")
+    public void testPartiallyUpdateMenuItemSuccess() {
+        Long itemId = 1L;
+
+        MenuItem existingItem = new MenuItem();
+        existingItem.setId(itemId);
+        existingItem.setName("OldName");
+        existingItem.setDescription("Old desc");
+        existingItem.setPrice(BigDecimal.valueOf(10));
+
+        MenuItem updates = new MenuItem();
+        updates.setName("NewName");
+        updates.setDescription("New desc");
+        updates.setPrice(BigDecimal.valueOf(20));
+
+        when(menuItemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
+        when(menuItemRepository.save(existingItem)).thenReturn(existingItem);
+
+        MenuItem result = menuItemService.partiallyUpdateMenuItem(itemId, updates);
+
+        assertNotNull(result);
+        assertEquals("NewName", result.getName());
+        assertEquals("New desc", result.getDescription());
+        assertEquals(BigDecimal.valueOf(20), result.getPrice());
+
+        verify(menuItemRepository).findById(itemId);
+        verify(menuItemRepository).save(existingItem);
+    }
+
 
 }
