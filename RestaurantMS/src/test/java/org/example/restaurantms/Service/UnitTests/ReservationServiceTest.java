@@ -122,4 +122,17 @@ public class ReservationServiceTest {
         verify(reservationRepository).delete(reservation);
     }
 
+    @Test
+    @DisplayName("Should throw exception when deleting non-existent reservation")
+    public void testDeleteReservationNotFound() {
+        Long reservationId = 99L;
+
+        when(reservationRepository.findById(reservationId)).thenReturn(Optional.empty());
+
+        assertThrows(Exception.class, () -> reservationService.deleteReservation(reservationId));
+        verify(reservationRepository, never()).delete(any());
+    }
+
+
+
 }
