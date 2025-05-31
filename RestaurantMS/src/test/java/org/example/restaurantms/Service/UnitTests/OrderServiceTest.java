@@ -86,7 +86,22 @@ public class OrderServiceTest {
         verify(orderRepository, atLeastOnce()).save(any(Order.class));
         verify(orderItemRepository).save(any(OrderItem.class));
         verify(deliveryRepository).save(any(Delivery.class));
+
+
     }
 
+    @Test
+    @DisplayName("Should get all orders")
+    public void testGetAllOrders() {
+        Order o1 = new Order();
+        Order o2 = new Order();
+
+        when(orderRepository.findAll()).thenReturn(Arrays.asList(o1, o2));
+
+        List<Order> orders = orderService.getAllOrders();
+
+        assertEquals(2, orders.size());
+        verify(orderRepository).findAll();
+    }
 
 }
