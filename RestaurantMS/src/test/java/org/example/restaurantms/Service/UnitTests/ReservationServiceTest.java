@@ -75,5 +75,20 @@ public class ReservationServiceTest {
         verify(reservationRepository).save(any(Reservation.class));
     }
 
+    @Test
+    @DisplayName("Should throw exception if reservation time is outside opening hours")
+    public void testCreateReservationInvalidTime() {
+        Long userId = 1L;
+        Long tableId = 2L;
+        LocalDateTime startTime = LocalDateTime.of(2025, 6, 1, 8, 0); // przed 10:00
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
+        when(tableRepository.findById(tableId)).thenReturn(Optional.of(new R_Table()));
+
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                reservationService.createReservation(userId, tableId, startTime));
+
+        assertTrue(exception.getMessage().contains("Restauracja jest czynna"));
+    }
 
 }
