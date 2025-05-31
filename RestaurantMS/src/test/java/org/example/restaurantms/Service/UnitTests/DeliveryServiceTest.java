@@ -44,5 +44,46 @@ public class DeliveryServiceTest {
         verify(deliveryRepository).findAll();
     }
 
+    @Test
+    @DisplayName("Should create delivery for an order without existing delivery")
+    public void testCreateDeliverySuccess() {
+        Long orderId = 1L;
+        String address = "123 Street";
+
+        Order order = new Order();
+        order.setId(orderId);
+        order.setDelivery(null);
+
+        Delivery savedDelivery = new Delivery();
+        savedDelivery.setId(1L);
+        savedDelivery.setAddress(address);
+        savedDelivery.setStatus(DeliveryStatus.IN_PROGRESS);
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+        when(deliveryRepository.save(any(Delivery.class))).thenReturn(savedDelivery);
+
+        Delivery result = deliveryService.createDelivery(orderId, address);
+
+        assertNotNull(result);
+        assertEquals(address, result.getAddress());
+        assertEquals(DeliveryStatus.IN_PROGRESS, result.getStatus());
+        verify(orderRepository).findById(orderId);
+        verify(deliveryRepository).save(any(Delivery.class));
+    }
+
+    @Test
+    @DisplayName("Should throw exception when creating delivery for non-existent order")
+    public void testCreateDeliveryOrderNotFound() {
+        Long orderId = 99L;
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () ->
+                deliveryService.createDelivery(orderId, "Nowhere"));
+
+        assertTrue(exception.getMessage().contains("Zamówienie o ID " + orderId + " nie istnieje"));
+        verify(orderRepository).findById(orderId);
+        verify(deliveryRepository, never()).save(any());
+    }
 
 }
