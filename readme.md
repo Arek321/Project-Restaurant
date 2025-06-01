@@ -26,7 +26,8 @@ Arkadiusz Domżał, grupa lab 1
 
 ## Diagram ERD bazy danych
 
-![img.png](img.png)
+![image](https://github.com/user-attachments/assets/23f47138-c99e-42ad-8500-c6dc7ea22749)
+
 
 ## 🛠️ Uruchamianie z Docker Compose
 
@@ -52,14 +53,17 @@ Dostęp do dokumentacji API znajduje się pod adresem:
 
 Endpointy:
 
-![img_1.png](img_1.png)
-![img_2.png](img_2.png)
+![image](https://github.com/user-attachments/assets/69f40f14-4e33-43b3-8a43-3454ac9d0cd8)
+
+![image](https://github.com/user-attachments/assets/637abb78-f8d9-4eb8-b8cd-d0db28aa176a)
+
 
 ## Testowanie aplikacji
 
 Wykonano testy jednostkowe i integracyjne:
 
-![img_3.png](img_3.png)
+![image](https://github.com/user-attachments/assets/b59f42b7-2cf8-4418-a7ce-722adffce5a0)
+
 
 Stan pokrycia:
 Klasy: 94% (17 z 18 klas pokrytych testami)
