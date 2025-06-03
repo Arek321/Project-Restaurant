@@ -13,5 +13,17 @@ public record UserRequest(
 
         @NotBlank(message = "Password is required")
         @Size(min = 8, message = "Password must be at least 8 characters")
-        String password
+        String password,
+
+        @NotBlank(message = "First name is required")
+        String first_name,
+
+        @NotBlank(message = "Last name is required")
+        String last_name,
+
+        @NotBlank(message = "Phone number is required")
+        String phoneNumber,
+
+        @NotBlank(message = "Address is required")
+        String address
 ) {}

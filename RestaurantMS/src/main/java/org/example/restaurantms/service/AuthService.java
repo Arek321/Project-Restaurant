@@ -28,6 +28,12 @@ public class AuthService {
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole(RoleType.ROLE_USER);
+        user.setFirst_name(request.first_name());
+        user.setLast_name(request.last_name());
+        user.setPhoneNumber(request.phoneNumber());
+        user.setAddress(request.address());
+
+
 
         User savedUser = userRepository.save(user);
         return convertToResponse(savedUser);

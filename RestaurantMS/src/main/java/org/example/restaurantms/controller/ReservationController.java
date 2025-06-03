@@ -45,8 +45,11 @@ public class ReservationController {
     })
     @PostMapping("/post")
     public ResponseEntity<ReservationDTO> createReservation(
+            @Parameter(description = "User ID to which the reservation will be set")
             @RequestParam Long userId,
+            @Parameter(description = "ID of the table to reserve")
             @RequestParam Long tableId,
+            @Parameter(description = "Date and time of reservation in format: (\"yyyy-MM-dd HH:mm:ss\")")
             @RequestParam String startTime
     ) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
