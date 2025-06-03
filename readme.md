@@ -4,7 +4,7 @@
 Arkadiusz Domżał, grupa lab 1
 
 **RestaurantMS** to aplikacja restauracyjna zbudowana w technologii **Java 21**, **Spring Boot**, **PostgreSQL** i **Docker**, umożliwiająca zarządzanie:
-- użytkownikami,
+- użytkownikami - podział na USER i ADMINISTRATOR,
 - rezerwacjami stolików,
 - zamówieniami (na miejscu / z dostawą),
 - menu i pozycjami w zamówieniu,
@@ -21,7 +21,9 @@ Arkadiusz Domżał, grupa lab 1
 - Docker & Docker Compose
 - Maven
 - Swager API
-
+- Spring Security (Basic Auth)
+- Flyway do obsługi migracji danych
+  
 ---
 
 ## Diagram ERD bazy danych
